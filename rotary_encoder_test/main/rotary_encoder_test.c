@@ -49,34 +49,34 @@ void app_main(void)
     last_state_A = gpio_get_level(ENC_A_PIN);
 
     while (1) {
-        int state_A = gpio_get_level(ENC_A_PIN);
-        int state_B = gpio_get_level(ENC_B_PIN);
-        int sw = gpio_get_level(ENC_SW_PIN);
+    int state_A = gpio_get_level(ENC_A_PIN);
+    int state_B = gpio_get_level(ENC_B_PIN);
+    int sw = gpio_get_level(ENC_SW_PIN);
 
-        // Detect rising edge on A
-        if (state_A != last_state_A) {
-            if (state_A == 1) {
-                if (state_B == 0) {
-                    ESP_LOGI(TAG, "Clockwise turn");
-                    flash_led(LED_CW_PIN, 2, 50);
-                } else {
-                    ESP_LOGI(TAG, "Counter-Clockwise turn");
-                    flash_led(LED_CCW_PIN, 2, 50);
-                }
+    if (state_A != last_state_A) {
+        if (state_A == 1) {
+            if (state_B == 0) {
+                ESP_LOGI(TAG, "Clockwise");
+                flash_led(LED_CW_PIN, 2, 30);
+            } else {
+                ESP_LOGI(TAG, "Counter-Clockwise");
+                flash_led(LED_CCW_PIN, 2, 30);
             }
         }
-
-        last_state_A = state_A;
-
-        // Push-button test
-        if (sw == 0) {
-            ESP_LOGI(TAG, "Encoder button pressed!");
-            flash_led(LED_CW_PIN, 1, 80);
-            flash_led(LED_CCW_PIN, 1, 80);
-            vTaskDelay(pdMS_TO_TICKS(250));
-        }
-
-        vTaskDelay(pdMS_TO_TICKS(1)); // small debounce / sampling delay
     }
+
+    last_state_A = state_A;
+
+    if (sw == 0) {
+        ESP_LOGI(TAG, "Button pressed");
+        flash_led(LED_CW_PIN, 1, 60);
+        flash_led(LED_CCW_PIN, 1, 60);
+        vTaskDelay(pdMS_TO_TICKS(120));
+    }
+
+    // IMPORTANT!
+    vTaskDelay(pdMS_TO_TICKS(5));   // <-- fix watchdog starvation
+}
+
 }
 
